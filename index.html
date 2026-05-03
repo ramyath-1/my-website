@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KarSports Connect - Karnataka Sports Community</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .event-card:hover { transform: translateY(-6px); transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="bg-orange-50 text-slate-900">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 bg-white/80 backdrop-blur-md border-b border-orange-200 z-50">
+        <div class="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-orange-600 p-2 rounded-xl shadow-lg shadow-orange-200">
+                    <i data-lucide="trophy" class="text-white w-6 h-6"></i>
+                </div>
+                <span class="font-extrabold text-2xl tracking-tight text-slate-800">KarSports <span class="text-orange-600 underline decoration-yellow-400 decoration-4 underline-offset-4">Connect</span></span>
+            </div>
+            
+            <button onclick="toggleModal(true)" class="bg-slate-900 text-white px-6 py-3 rounded-2xl text-sm font-bold hover:bg-orange-600 transition-all flex items-center gap-2 active:scale-95">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                List an Event
+            </button>
+        </div>
+    </nav>
+
+    <!-- App Hero Section -->
+    <header class="py-16 px-6 text-center max-w-4xl mx-auto">
+        <div class="inline-flex items-center gap-2 bg-white border border-orange-200 px-4 py-2 rounded-full text-xs font-bold text-orange-600 uppercase tracking-widest mb-6">
+            <i data-lucide="map-pin" class="w-3 h-3"></i> Serving Karnataka
+        </div>
+        <h1 class="text-5xl md:text-6xl font-extrabold text-slate-900 mb-6 leading-tight">Every Match, Every <span class="text-orange-600">District</span>.</h1>
+        <p class="text-slate-500 text-lg md:text-xl font-medium leading-relaxed">
+            Your community board for local cricket tournaments, kabaddi matches, marathons, and gym meets happening in Karnataka.
+        </p>
+    </header>
+
+    <!-- Filters & Search -->
+    <section class="max-w-6xl mx-auto px-4 mb-12">
+        <div class="bg-white p-6 rounded-[2.5rem] shadow-xl shadow-orange-100 border border-orange-100 flex flex-col md:flex-row gap-4 items-center">
+            <div class="relative flex-1 w-full">
+                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input 
+                    id="search"
+                    type="text" 
+                    placeholder="Search events (e.g. Bangalore, KPL, Marathon...)" 
+                    class="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-orange-500 transition outline-none"
+                    oninput="filterEvents()"
+                >
+            </div>
+            <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                <button onclick="setFilter('All')" class="filter-btn px-6 py-3 bg-orange-600 text-white rounded-2xl text-sm font-bold transition">All</button>
+                <button onclick="setFilter('Cricket')" class="filter-btn px-6 py-3 bg-slate-50 text-slate-600 rounded-2xl text-sm font-bold hover:bg-orange-100 transition whitespace-nowrap">Cricket</button>
+                <button onclick="setFilter('Football')" class="filter-btn px-6 py-3 bg-slate-50 text-slate-600 rounded-2xl text-sm font-bold hover:bg-orange-100 transition whitespace-nowrap">Football</button>
+                <button onclick="setFilter('Athletics')" class="filter-btn px-6 py-3 bg-slate-50 text-slate-600 rounded-2xl text-sm font-bold hover:bg-orange-100 transition whitespace-nowrap">Athletics</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Grid -->
+    <main class="max-w-6xl mx-auto px-4 pb-24">
+        <div id="events-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- JavaScript will inject cards here -->
+        </div>
+        
+        <div id="empty-state" class="hidden text-center py-20 bg-white rounded-[3rem] border-2 border-dashed border-orange-200">
+            <i data-lucide="frown" class="w-16 h-16 text-orange-200 mx-auto mb-4"></i>
+            <h3 class="text-xl font-bold text-slate-400">No events found in this category</h3>
+        </div>
+    </main>
+
+    <!-- Modal Form -->
+    <div id="modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="toggleModal(false)"></div>
+        <div class="relative w-full max-w-lg bg-white rounded-[3rem] p-8 shadow-2xl overflow-hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-extrabold">Post Event</h2>
+                <button onclick="toggleModal(false)" class="p-2 bg-slate-50 rounded-full text-slate-400 hover:text-slate-900">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <form id="event-form" class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-2">Tournament Name</label>
+                    <input name="name" required type="text" placeholder="e.g. Mysuru District Kabaddi Meet" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-orange-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-2">Sport Type</label>
+                        <select name="type" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-orange-500 outline-none">
+                            <option>Cricket</option>
+                            <option>Football</option>
+                            <option>Kabaddi</option>
+                            <option>Athletics</option>
+                            <option>Badminton</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-2">Location</label>
+                        <input name="location" required type="text" placeholder="e.g. Hubballi" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-orange-500 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-2">Date & Time</label>
+                    <input name="date" required type="datetime-local" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-orange-500 outline-none">
+                </div>
+                <button type="submit" class="w-full bg-orange-600 text-white py-5 rounded-[1.5rem] font-bold text-lg hover:bg-orange-700 shadow-xl shadow-orange-100 transition active:scale-95 mt-4">
+                    Publish Event
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="bg-slate-900 py-16 text-center text-white/40">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-center gap-3 mb-6 opacity-40">
+                 <i data-lucide="trophy" class="w-8 h-8"></i>
+                 <span class="font-bold text-xl">KarSports</span>
+            </div>
+            <p class="text-sm font-medium">Empowering local sports communities across Karnataka.</p>
+            <p class="text-xs mt-4">© 2026 Student Engineering Project • Made with ❤️ in Karnataka</p>
+        </div>
+    </footer>
+
+    <script>
+        // Data Store
+        let events = [
+            { id: 1, name: "Namma Bengaluru Marathon", type: "Athletics", location: "Kanteerava Stadium, Bengaluru", date: "June 12, 2026 • 05:30 AM", district: "Bengaluru" },
+            { id: 2, name: "Dharwad Premier League 2026", type: "Cricket", location: "RNNS Ground, Dharwad", date: "May 20, 2026 • 09:00 AM", district: "Dharwad" },
+            { id: 3, name: "Shimoga Open Badminton", type: "Badminton", location: "Indoor Court, Shivamogga", date: "May 25, 2026 • 10:00 AM", district: "Shivamogga" },
+            { id: 4, name: "Coastal Karnataka Football Cup", type: "Football", location: "Nehru Maidan, Mangaluru", date: "June 05, 2026 • 04:00 PM", district: "Dakshina Kannada" },
+            { id: 5, name: "North Karnataka Kabaddi Championship", type: "Kabaddi", location: "Police Ground, Belagavi", date: "May 18, 2026 • 06:00 PM", district: "Belagavi" }
+        ];
+
+        let activeFilter = 'All';
+
+        function render() {
+            const grid = document.getElementById('events-grid');
+            const empty = document.getElementById('empty-state');
+            const searchVal = document.getElementById('search').value.toLowerCase();
+            
+            const filtered = events.filter(e => {
+                const matchesSearch = e.name.toLowerCase().includes(searchVal) || e.location.toLowerCase().includes(searchVal);
+                const matchesFilter = activeFilter === 'All' || e.type === activeFilter;
+                return matchesSearch && matchesFilter;
+            });
+
+            grid.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                empty.classList.remove('hidden');
+            } else {
+                empty.classList.add('hidden');
+                filtered.forEach(e => {
+                    grid.innerHTML += `
+                        <div class="bg-white p-8 rounded-[2.5rem] border border-orange-100 shadow-xl shadow-orange-50/50 event-card flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-6">
+                                    <span class="px-4 py-1.5 bg-orange-100 text-orange-700 rounded-full text-[10px] font-black uppercase tracking-widest">${e.type}</span>
+                                    <div class="flex items-center text-slate-300">
+                                        <i data-lucide="share-2" class="w-4 h-4 cursor-pointer hover:text-orange-600 transition"></i>
+                                    </div>
+                                </div>
+                                <h3 class="text-2xl font-extrabold text-slate-800 mb-3 leading-snug">${e.name}</h3>
+                                <div class="space-y-2">
+                                    <p class="text-sm font-bold text-slate-500 flex items-center gap-2">
+                                        <i data-lucide="map-pin" class="w-4 h-4 text-orange-400"></i> ${e.location}
+                                    </p>
+                                    <p class="text-sm font-bold text-slate-400 flex items-center gap-2">
+                                        <i data-lucide="calendar" class="w-4 h-4 text-orange-400"></i> ${e.date}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="mt-8 pt-8 border-t border-slate-50">
+                                <button class="w-full py-4 bg-slate-50 rounded-2xl font-bold text-slate-600 hover:bg-orange-600 hover:text-white transition-all flex items-center justify-center gap-2">
+                                    Register Now <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            lucide.createIcons();
+        }
+
+        function toggleModal(show) {
+            document.getElementById('modal').classList.toggle('hidden', !show);
+        }
+
+        function setFilter(f) {
+            activeFilter = f;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if(btn.innerText === f || (f === 'All' && btn.innerText === 'All')) {
+                    btn.className = "filter-btn px-6 py-3 bg-orange-600 text-white rounded-2xl text-sm font-bold transition";
+                } else {
+                    btn.className = "filter-btn px-6 py-3 bg-slate-50 text-slate-600 rounded-2xl text-sm font-bold hover:bg-orange-100 transition whitespace-nowrap";
+                }
+            });
+            render();
+        }
+
+        function filterEvents() { render(); }
+
+        document.getElementById('event-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const data = new FormData(e.target);
+            const rawDate = new Date(data.get('date'));
+            const formattedDate = rawDate.toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' }) + 
+                                  ' • ' + rawDate.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+            const newEvent = {
+                id: Date.now(),
+                name: data.get('name'),
+                type: data.get('type'),
+                location: data.get('location'),
+                date: formattedDate
+            };
+
+            events.unshift(newEvent);
+            render();
+            toggleModal(false);
+            e.target.reset();
+        });
+
+        // Init
+        render();
+        lucide.createIcons();
+    </script>
+</body>
+</html>
